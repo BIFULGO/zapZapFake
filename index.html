@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <title>Whatsapp FAKE</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+
+    <style>
+      body {
+    font-family: sans-serif;
+    margin: 20px;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    color: #25D366; /* Cor verde do WhatsApp */
+    margin-bottom: 20px;
+}
+
+#mensagens {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 90%;
+    max-width: 500px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    overflow-y: auto;
+    max-height: 300px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+#mensagens li {
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    background-color: #dcf8c6; /* Cor de fundo das mensagens */
+    align-self: flex-start; /* Alinha as mensagens à esquerda */
+    word-break: break-word; /* Evita que textos longos quebrem o layout */
+}
+
+#mensagens li:nth-child(odd) {
+    background-color: #e7ffdb; /* Uma variação leve para diferenciar */
+}
+
+#mensagens li strong {
+    font-weight: bold;
+    color: #075e54; /* Cor do nome do usuário */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    max-width: 500px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"] {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #25D366;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #25D366;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #128C7E;
+}
+
+/* Estilo para quando o input de nome está desabilitado */
+input#nome:disabled {
+    background-color: #eee;
+    color: #777;
+    cursor: not-allowed;
+}
+
+input{
+  width: 90%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+    </style>
+
+
+
+
+
+
+
+
+
+    <h1>Whatsapp FAKE</h1>
+    <ul id="mensagens"></ul>
+    <form>
+      <input id="nome" placeholder="Seu nome de usuário" autocomplete="off" /><br>
+      <input id="mensagem" placeholder="Sua mensagem" autocomplete="off" /><br><br>
+      <button>Enviar</button>
+    </form>
+    <!-- Importa o script do Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      // Cria uma instância do Socket.IO
+      const socket = io();
+      // Seleciona o input do nome do usuário
+      const nomeInput = document.getElementById('nome');
+      // Seleciona o input da mensagem
+      const mensagemInput = document.getElementById('mensagem');
+      // Seleciona a lista de mensagens
+      const mensagens = document.getElementById('mensagens');
+
+      // Adiciona um evento de escuta para o envio do formulário
+      document.querySelector('form').addEventListener('submit', event => {
+        // Previne o envio padrão do formulário
+        event.preventDefault();
+        // Obtém o valor do input do nome do usuário
+        const nome = nomeInput.value;
+        // Obtém o valor do input da mensagem
+        const mensagem = mensagemInput.value;
+        // Verifica se ambos os campos foram preenchidos antes de enviar a mensagem
+        // Verifica se os valores são válidos (não estão em branco)
+        //trim() é um método da linguagem JavaScript que remove os espaços em branco do início e do final de uma string.
+        // emit envia um evento chamado "chat message" com um objeto contendo os valores de nome e mensagem para o servidor.
+        nome.trim() && mensagem.trim() && socket.emit('chat message', { nome, mensagem });
+        // Limpa o input da mensagem
+        mensagemInput.value = '';
+        // Desabilita o input do nome do usuário após a primeira mensagem
+        nomeInput.disabled = true; 
+      });
+
+      // Adiciona um evento de escuta para o evento de mensagem recebido do servidor
+      socket.on('chat message', dados => {
+        // Cria um elemento de lista para exibir a mensagem
+        const lista = document.createElement('li');
+        // Define o texto da mensagem
+        lista.textContent = `${dados.nome}: ${dados.mensagem}`;
+        // Adiciona o elemento de lista à lista de mensagens
+        mensagens.appendChild(lista);
+      });
+    </script>
+  </body>
+</html>
